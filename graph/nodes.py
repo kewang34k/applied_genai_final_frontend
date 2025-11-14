@@ -2,8 +2,9 @@
 from graph.state import GraphState
 from graph.router import get_router_chain
 from graph.planner import get_planner_chain
-import json
+from graph.planner.validator import validate_plan
 import logging
+
 logger = logging.getLogger(__name__)
 
 def router_node(state: GraphState) -> GraphState:
@@ -48,14 +49,7 @@ def router_node(state: GraphState) -> GraphState:
     return state
 
 def planner_node(state: GraphState) -> GraphState:
-    """
-    Create a retrieval plan based on task and constraints.
-    Uses rule-based logic for speed and reliability.
-    """
-    
-    task = state["task"]
-    constraints = state["constraints"]
-    query = state["query"]
+    """Create retrieval plan using LLM."""
     
     try:
         # Use the chain
@@ -77,20 +71,17 @@ def planner_node(state: GraphState) -> GraphState:
         # Log
         state["step_log"].append({
             "node": "planner",
-            "input": {
-                "task": task,
-                "constraints": constraints
-            },
+            "input": chain_input,
             "output": plan,
             "success": True
         })
         
     except Exception as e:
-        # Fallback plan
+        # Fallback
         state["plan"] = {
             "sources": ["private_rag"],
-            "retrieval_fields": ["title", "price", "rating"],
-            "comparison_criteria": ["price"],
+            "retrieval_fields": ["title", "brand", "price", "rating"],
+            "comparison_criteria": ["price", "rating"],
             "filters": {}
         }
         state["step_log"].append({

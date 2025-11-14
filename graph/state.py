@@ -9,7 +9,7 @@ class GraphState(TypedDict):
     
     # Router outputs
     task: str  # One of: "product_search", "comparison", "recommendation", "availability_check"
-    constraints: dict  # Contains: product, min_budget, max_budget, material, brand
+    constraints: dict  # Contains: product, min_price, max_price, material, brand
     safety_flags: List[str]  # Filtered to valid flags only
     
     # Planner outputs
