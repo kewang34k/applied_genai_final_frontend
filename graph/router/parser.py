@@ -14,8 +14,8 @@ VALID_SAFETY_FLAGS = {"inappropriate_content", "medical_advice", "dangerous_prod
 class Constraints(BaseModel):
     # description: documentation for the LLM/parser
     product: Optional[str] = Field(None, description="Product type or category (e.g., 'shoes', 'laptop', 'cleaner')")
-    min_budget: Optional[float] = Field(None, description="Minimum price in USD")
-    max_budget: Optional[float] = Field(None, description="Maximum price in USD")
+    min_price: Optional[float] = Field(None, description="Minimum price in USD")
+    max_price: Optional[float] = Field(None, description="Maximum price in USD")
     material: Optional[str] = Field(None, description="Material preference (e.g., 'leather', 'stainless steel')")
     brand: Optional[List[str]] = Field(None, description="Brand name(s) as a list (e.g., ['Nike', 'Adidas'])")
     
@@ -88,24 +88,24 @@ def parse_router_output(text: str) -> RouterOutput:
     # Extract constraints with type coercion
     constraints_data = data.get("constraints", {})
     
-    # Coerce budgets to float
-    min_budget = constraints_data.get("min_budget")
-    if min_budget is not None and min_budget != "null" and min_budget != "":
+    # Coerce prices to float
+    min_price = constraints_data.get("min_price")
+    if min_price is not None and min_price != "null" and min_price != "":
         try:
-            min_budget = float(min_budget)
+            min_price = float(min_price)
         except (ValueError, TypeError):
-            min_budget = None
+            min_price = None
     else:
-        min_budget = None
+        min_price = None
     
-    max_budget = constraints_data.get("max_budget")
-    if max_budget is not None and max_budget != "null" and max_budget != "":
+    max_price = constraints_data.get("max_price")
+    if max_price is not None and max_price != "null" and max_price != "":
         try:
-            max_budget = float(max_budget)
+            max_price = float(max_price)
         except (ValueError, TypeError):
-            max_budget = None
+            max_price = None
     else:
-        max_budget = None
+        max_price = None
     
     # Ensure brand is array
     brand = constraints_data.get("brand")
@@ -119,8 +119,8 @@ def parse_router_output(text: str) -> RouterOutput:
     # Create Constraints object
     constraints = Constraints(
         product=constraints_data.get("product"),
-        min_budget=min_budget,
-        max_budget=max_budget,
+        min_price=min_price,
+        max_price=max_price,
         material=constraints_data.get("material"),
         brand=brand
     )
